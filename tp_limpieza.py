@@ -107,7 +107,15 @@ data0 = data0.set_index('Id', drop=False)
 data0 = data0.drop(todos_los_borrados['Id'])
 data0 = data0.drop(columns=['COUNT'])
 
-data0.to_excel('./tiburones_sin_duplicados.xlsx')
+#%% ===========================================================================
+data0.columns = ['Id', 'Date', 'Fecha', 'Color', 'Incidente', 'Year', 'Type',
+                 'Coincide tipo', 'Country', 'Pais', 'State', 'Locacion', 'Activity',
+                 'Name', 'Sex', 'Age', 'Injury', 'Fatal', 'Column', 'Time',
+                 'Species', 'Source', 'pdf', 'href formula', 'href', 'Case Number',
+                 'Case Number 2', 'original order']
+
+data_clean = data0[['Fecha', 'Incidente', 'Pais', 'Locacion', 'Fatal']]
+data_clean.to_excel('./tiburones_sin_duplicados.xlsx')
 
 #%% ===========================================================================
 
