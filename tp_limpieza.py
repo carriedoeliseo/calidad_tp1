@@ -5,53 +5,7 @@ import pandas as pd
 from inline_sql import sql
 from openpyxl.styles import PatternFill
 
-#%% ===========================================================================
 
-df = pd.read_excel('./tiburones_color.xlsx')
-
-#%% ===========================================================================
-
-'''
-• Unprovoked Incidents = #eddab5
-• Provoked Incidents = #ffcc99 
-• Attacks on Boats = #cfeecc
-• Air / Sea Disasters = #ffffc5
-• Questionable Incidents = #99ccff
-'''
-
-no_match_color = df[ (df['HexColor'] != '#eddab5') & 
-                     (df['HexColor'] != '#ffcc99') &
-                     (df['HexColor'] != '#cfeecc') &
-                     (df['HexColor'] != '#fef2cb') &
-                     (df['HexColor'] != '#99ccff') &
-                     (df['HexColor'] != '#fbe4d5') &
-                     (df['HexColor'] != '#ffffc5') ]
-
-
-#%% ===========================================================================
-
-wb = openpyxl.load_workbook('./tiburon2.xlsx')
-sheet = wb.active
-
-#%% ===========================================================================
-
-df = df[['Type', 'Country', 'State', 'Location', 'Injury']]
-def obtener_color_fondo(celda):
-    # Verifica si la celda tiene un color de fondo
-    color = celda.fill.start_color
-    if color.type == "rgb":  # Si el color está en formato RGB
-        return f"#{color.rgb[2:]}"  # Elimina los primeros dos caracteres (transparencia)
-    elif color.type == "theme":  # Si usa un color de tema
-        return f"Tema-{color.theme}"
-    return None  # Si no hay color o el tipo es desconocido
-
-colores_fondo = []
-
-for fila in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
-    fila_colores_fondo = [obtener_color_fondo(celda) for celda in fila]
-    colores_fondo.append(fila_colores_fondo)
-
-colores_fondo = pd.DataFrame()
 
 #%% ===========================================================================
 
