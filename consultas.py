@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
+#%%
+
 consulta = """
                 SELECT d.Incidente , d.FATAL AS Fatal, COUNT(*) AS cantidad_incidentes 
                 FROM data0 AS d 
@@ -68,19 +70,54 @@ plt.show()
 #%%
 
 consulta = """
-                SELECT d.Incidente ,d.Pais,d.Color, COUNT(*) AS cantidad_incidentes 
+                SELECT d.Pais, d.Incidente ,d.Color, COUNT(*) AS cantidad_incidentes 
                 FROM data0 AS d 
                 GROUP BY d.Incidente, d.Pais , d.Color
-                HAVING d.Pais = 'United States of America' or d.Pais = 'Australia' or d.Pais = 'South Africa'
                 ORDER BY cantidad_incidentes DESC, d.Pais , Incidente 
             """
-cantidad_incidentes_tipo_faltal_pais = sql^consulta
+            
+cantidad_incidentes_pais = sql^consulta
 
+incidentes_us_sa_au = sql^ """
+                            SELECT *
+                            FROM cantidad_incidentes_tipo_faltal_pais
+                            WHERE (Pais = 'United States of America') OR
+                                  (Pais = 'Australia') OR
+                                  (Pais = 'South Africa')
+                           """
 
-us = cantidad_incidentes_tipo_faltal_pais[cantidad_incidentes_tipo_faltal_pais['Pais'] == 'United States of America']
-au = cantidad_incidentes_tipo_faltal_pais[cantidad_incidentes_tipo_faltal_pais['Pais'] == 'Australia']
-sf = cantidad_incidentes_tipo_faltal_pais[cantidad_incidentes_tipo_faltal_pais['Pais'] == 'South Africa']
+data = incidentes_us_sa_au.pivot(index='Pais', columns='Incidente', values='cantidad_incidentes')
 
+# Pivoteo
+cantidad_incidentes_pais = cantidad_incidentes_pais.pivot(index='Pais', columns='Incidente', values='cantidad_incidentes')
+cantidad_incidentes_pais.fillna(0, inplace=True)
+cantidad_incidentes_pais.reset_index(inplace=True)
 
+# Dropeo paises nulos
+cantidad_incidentes_pais.dropna(inplace=True)
 
+# Agarro continentes y raros
+cantidad_incidentes_pais_aparte = cantidad_incidentes_pais[(cantidad_incidentes_pais['Pais'] == 'AFRICA') |
+                                                           (cantidad_incidentes_pais['Pais'] == 'ASIA') | 
+                                                           (cantidad_incidentes_pais['Pais'] == 'INTERNATIONAL SEAS') |
+                                                           (cantidad_incidentes_pais['Pais'] == 'DIVIDED TERRITORY') ]
+cantidad_incidentes_pais_aparte.to_excel('./no_paises.xlsx')
 
+# Agarro NO RAROS
+cantidad_incidentes_pais.drop(cantidad_incidentes_pais_aparte.index, inplace=True)
+cantidad_incidentes_pais.to_excel('./paises.xlsx')
+
+data.reset_index(inplace=True)
+data = data[['Pais', 'Unprovoked', 'Provoked', 'Questionable', 'Boat', 'Sea Disaster']]
+
+fig, ax = plt.subplots()
+
+colors = ['#eddab5', '#ffcc99', '#99ccff', '#cfeecc', '#ffffc5'] 
+data.plot(x='Pais', 
+          y=['Unprovoked', 'Provoked', 'Questionable', 'Boat', 'Sea Disaster'], 
+          kind='bar',
+          label=['Unprovoked', 'Provoked', 'Questionable', 'Boat', 'Sea Disaster'],
+          color=colors,
+          ax=ax,)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=0, size=8)
+ax.set_ylabel('Cantidad de casos')
