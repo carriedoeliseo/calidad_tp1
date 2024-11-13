@@ -1,4 +1,4 @@
-from tp_limpieza import data0
+^^from tp_limpieza import data0
 import pandas as pd
 from inline_sql import sql
 import matplotlib.pyplot as plt
@@ -121,3 +121,49 @@ data.plot(x='Pais',
           ax=ax,)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=0, size=8)
 ax.set_ylabel('Cantidad de casos')
+
+
+#%%
+
+consulta = """ 
+              SELECT Incidente , Color , SUM(cantidad_incidentes) as cantidad_incidentes
+              FROM cantidad_incidentes_pais 
+              Group by Incidente, Color
+              """
+Porcentaje_df = sql^ consulta
+
+total_general = Porcentaje_df['cantidad_incidentes'].sum()
+
+# Calcular el porcentaje de cada tipo
+Porcentaje_df['Porcentaje'] = (Porcentaje_df['cantidad_incidentes'] / total_general) * 100
+
+
+ 
+
+
+fig, ax = plt.subplots(figsize=(8, 8))  # Tamaño de la figura
+
+# Colores más específicos si lo deseas (aquí ya usas los colores del DataFrame)
+ax.pie(Porcentaje_df['Porcentaje'], 
+       labels=Porcentaje_df['Incidente'], 
+       autopct='%1.1f%%',  # 1 decimal en el porcentaje
+       colors=Porcentaje_df['Color'],  # Usando los colores del DataFrame
+       startangle=90,  # Alineación desde arriba
+       wedgeprops={'edgecolor': 'black', 'linewidth': 1})  # Borde negro para las rebanadas
+
+# Personalizar tamaño de las etiquetas (tipos de incidentes)
+for label in ax.labels:
+    label.set_fontsize(14)  # Aumentar el tamaño de la fuente de las etiquetas
+
+# Personalizar tamaño de los porcentajes
+for percentage in ax.texts: 
+    percentage.set_fontsize(16)  # Aumentar el tamaño de la fuente de los porcentajes
+
+# Estilo y título
+ax.set_title('Porcentaje de Incidentes de Tiburón por Tipo', fontsize=18, fontweight='bold')
+
+# Mostrar gráfico
+plt.tight_layout()  # Esto ajusta el diseño automáticamente para evitar que se solapen los elementos
+plt.show()
+
+
