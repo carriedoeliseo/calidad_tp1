@@ -141,29 +141,29 @@ Porcentaje_df['Porcentaje'] = (Porcentaje_df['cantidad_incidentes'] / total_gene
  
 
 
-fig, ax = plt.subplots(figsize=(8, 8))  # Tamaño de la figura
+fig, ax = plt.subplots(figsize=(8, 8))  
 
-# Colores más específicos si lo deseas (aquí ya usas los colores del DataFrame)
+
 ax.pie(Porcentaje_df['Porcentaje'], 
        labels=Porcentaje_df['Incidente'], 
-       autopct='%1.1f%%',  # 1 decimal en el porcentaje
-       colors=Porcentaje_df['Color'],  # Usando los colores del DataFrame
+       autopct='%1.1f%%',  
+       colors=Porcentaje_df['Color'],  e
        startangle=90,  # Alineación desde arriba
-       wedgeprops={'edgecolor': 'black', 'linewidth': 1})  # Borde negro para las rebanadas
+       wedgeprops={'edgecolor': 'black', 'linewidth': 1}) 
 
-# Personalizar tamaño de las etiquetas (tipos de incidentes)
+
 for label in ax.labels:
-    label.set_fontsize(14)  # Aumentar el tamaño de la fuente de las etiquetas
+    label.set_fontsize(14) 
 
-# Personalizar tamaño de los porcentajes
+
 for percentage in ax.texts: 
-    percentage.set_fontsize(16)  # Aumentar el tamaño de la fuente de los porcentajes
+    percentage.set_fontsize(16)  
 
-# Estilo y título
+
 ax.set_title('Porcentaje de Incidentes de Tiburón por Tipo', fontsize=18, fontweight='bold')
 
-# Mostrar gráfico
-plt.tight_layout()  # Esto ajusta el diseño automáticamente para evitar que se solapen los elementos
+
+plt.tight_layout() 
 plt.show()
 
 
